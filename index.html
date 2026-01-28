@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POS Platform Mind Map</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f7fb;
+        --node-bg: #ffffff;
+        --node-border: #cfd4e6;
+        --node-selected: #7b8cff;
+        --line: #9aa5c7;
+        --text: #1f2430;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+        flex: 1 1 auto;
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid var(--node-border);
+        background: var(--node-bg);
+        color: var(--text);
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      button:hover {
+        border-color: var(--node-selected);
+      }
+
+      .hint {
+        font-size: 12px;
+        color: #4a5163;
+      }
+
+      .mindmap {
+        position: relative;
+        padding: 12px 0 24px 0;
+      }
+
+      .mindmap ul {
+        list-style: none;
+        margin: 0;
+        padding-left: 28px;
+        position: relative;
+      }
+
+      .mindmap ul::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 12px;
+        bottom: 0;
+        width: 2px;
+        background: var(--line);
+      }
+
+      .mindmap li {
+        margin: 12px 0;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .mindmap li.collapsed > ul {
+        display: none;
+      }
+
+      .mindmap li::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 12px;
+        width: 16px;
+        height: 2px;
+        background: var(--line);
+      }
+
+      .node {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: var(--node-bg);
+        border: 2px solid var(--node-border);
+        border-radius: 999px;
+        box-shadow: 0 4px 12px rgba(31, 36, 48, 0.08);
+        cursor: pointer;
+      }
+
+      .node-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1px solid var(--node-border);
+        font-size: 12px;
+        line-height: 1;
+        color: #4a5163;
+        background: #f2f4ff;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .node-toggle[aria-hidden="true"] {
+        display: none;
+      }
+
+      .node[data-selected="true"] {
+        border-color: var(--node-selected);
+        box-shadow: 0 6px 18px rgba(123, 140, 255, 0.2);
+      }
+
+      .node span[contenteditable="true"] {
+        outline: none;
+        min-width: 32px;
+      }
+
+      .node small {
+        color: #6c738a;
+        font-size: 12px;
+      }
+
+      .root > .node {
+        font-weight: 600;
+        background: #eef0ff;
+      }
+
+      .meta {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #56607a;
+      }
+
+      .list-output {
+        margin-top: 18px;
+        background: var(--node-bg);
+        border: 1px solid var(--node-border);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 18px rgba(31, 36, 48, 0.08);
+      }
+
+      .list-output.hidden {
+        display: none;
+      }
+
+      .list-output textarea {
+        width: 100%;
+        min-height: 180px;
+        border: 1px solid var(--node-border);
+        border-radius: 8px;
+        padding: 10px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 13px;
+        resize: vertical;
+      }
+
+      .list-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 16px;
+        }
+
+        .mindmap ul {
+          padding-left: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>POS Platform Mind Map</h1>
+      <div class="controls">
+        <button id="add-child">Add child bubble</button>
+        <button id="add-sibling">Add sibling bubble</button>
+        <button id="delete-node">Delete bubble</button>
+        <button id="collapse-all">Collapse everything</button>
+        <button id="expand-all">Expand all</button>
+        <button id="generate-list">Generate list</button>
+      </div>
+      <div class="hint">
+        Click a bubble to select. Double-click text to edit.
+      </div>
+    </header>
+
+    <div class="mindmap" id="mindmap">
+      <ul>
+        <li class="root">
+          <div class="node" data-selected="true">
+            <span contenteditable="true">SYSTEM CORE (POS PLATFORM)</span>
+            <small>root</small>
+          </div>
+          <ul>
+            <li>
+              <div class="node"><span contenteditable="true">Products &amp; Menu System</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Categories</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Coffee</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Drinks</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Food</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Bakery</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Alcohol</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Merchandise</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Add-ons</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Specials</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Seasonal items</span></div></li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Fields</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Visibility</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Available time</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Tax group</span></div></li>
+                      </ul>
+                    </li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Links</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">POS Sales</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Manager Setup</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Customer App</span></div></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Products (Sellable Items)</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Category</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Price</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Tax type</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Recipe</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Add-ons allowed</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Allergens</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Image</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Availability</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Margin / cost</span></div></li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Item printing settings</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Connect to printer</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Manager selects printable items</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Send to specific printer(s)</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Split / divide receipts</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Question mark: make all digital bons</span></div></li>
+                      </ul>
+                    </li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Links</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Recipe System</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Inventory System</span></div></li>
+                        <li><div class="node"><span contenteditable="true">POS Checkout</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Loyalty System</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Add-ons</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Extra shot</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Alternative milk</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Syrup</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Whipped cream</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Has price</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Has recipe</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Can be limited per product</span></div></li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Links</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Product</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Recipe</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Recipe System</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Ingredients + quantities</span></div></li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Example: Latte</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Espresso 18g</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Milk 200ml</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Cup 1x</span></div></li>
+                      </ul>
+                    </li>
+                    <li><div class="node"><span contenteditable="true">Ingredient links to inventory item</span></div></li>
+                    <li>
+                      <div class="node"><span contenteditable="true">Links</span></div>
+                      <ul>
+                        <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Cost calculation</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Stock decrease on sale</span></div></li>
+                        <li><div class="node"><span contenteditable="true">Profit calculation</span></div></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Inventory &amp; Storage System</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Item Types</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Sellable Products</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Ingredients</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Disposables</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Hygiene &amp; Cleaning</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Equipment</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Office supplies</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Inventory Item Fields</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Type</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Unit (g, ml, pcs)</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Current stock</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Minimum stock</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Supplier</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Cost per unit</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Storage location</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Stock Movement</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Sale → auto decrease via recipe</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Invoice input → increase</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Manual adjustment</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Waste / loss</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Invoice Upload</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Manager uploads invoice</span></div></li>
+                    <li><div class="node"><span contenteditable="true">System parses items</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Stock increases</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Costs stored</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Low Stock Logic</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Notify responsible person</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Appears in manager dashboard</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Recipes</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Supplier module</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Sales &amp; Payment System</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">POS Checkout</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Product selection</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Add-ons</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Discounts</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Loyalty points</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Payment method</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Payment Types</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Cash</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Card</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Online</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Voucher</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Gift card</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Money Flow Tracking</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Sale record</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Payment record</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Tax record</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Profit record</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Loyalty</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Finance Module</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Income Sources</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Cafe POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">E-shop</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Catering</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Events</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Wholesale</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance core</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Expenses</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Inventory purchases</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Rent</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Salaries</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Services</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Marketing</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Equipment</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Dashboards</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Revenue</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Costs</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Profit</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Cash vs Card</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Taxes</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Staff payroll</span></div></li>
+                    <li><div class="node"><span contenteditable="true">AI Engine</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Staff / Roles / HR System</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Roles</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Owner</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Managing Employee</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Barista</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Kitchen Staff</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Cleaning Staff</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Temporary Worker</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Employee Profile</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Role</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Contract type</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Hourly wage / salary</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Vacation balance</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Contact info</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Permissions</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Permissions</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Screens visible</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Editable settings</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Approval rights</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Time Tracking</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Auto clock in/out</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Manual correction</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Approval by managing employee</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Scheduling</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Calendar</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Shifts</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Swap shifts</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Manager approves swaps</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Salary View</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Hours worked</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Earnings</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Bonuses</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Vacation balance</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Responsibilities</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Responsibility System (Task Engine)</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Responsibility Object</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Description</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Frequency</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Assigned role/person</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Backup person</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Responsibility Log</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Created</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Assigned</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Completed</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Missed</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Auto Transfer</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Transfers if absent</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Notification sent</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Staff</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Manager Dashboard</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Customer &amp; Loyalty System</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Customer Profile</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Phone / email</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Points</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Visits</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Preferences</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Loyalty Logic</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Points per purchase</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Rewards</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Discounts</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Special offers</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Fun Layer</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Customer of the Month</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Free breakfast</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Badges</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Marketing</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Communication &amp; Marketing Hub</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Channels</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Email</span></div></li>
+                    <li><div class="node"><span contenteditable="true">WhatsApp</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Telegram</span></div></li>
+                    <li><div class="node"><span contenteditable="true">SMS</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Campaign Builder</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Select audience</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Message</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Schedule</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Track results</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Sales AI Bots</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Automated outreach</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Follow-ups</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Promotions</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Customers</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
+                    <li><div class="node"><span contenteditable="true">AI Engine</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">AI Engine (Intelligence Layer)</span></div>
+              <ul>
+                <li><div class="node"><span contenteditable="true">Sales trends</span></div></li>
+                <li><div class="node"><span contenteditable="true">Stock usage</span></div></li>
+                <li><div class="node"><span contenteditable="true">Labor costs</span></div></li>
+                <li><div class="node"><span contenteditable="true">Profits</span></div></li>
+                <li><div class="node"><span contenteditable="true">Other businesses data</span></div></li>
+                <li>
+                  <div class="node"><span contenteditable="true">Provides</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Cost-saving suggestions</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Price optimization</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Menu optimization</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Staff optimization</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Links</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
+                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Staff</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="node"><span contenteditable="true">Big Picture Flow</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span contenteditable="true">Sale</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Inventory decreases</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance records</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Loyalty updates</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Analytics updated</span></div></li>
+                    <li><div class="node"><span contenteditable="true">AI learns</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Invoice</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Inventory increases</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance cost</span></div></li>
+                    <li><div class="node"><span contenteditable="true">AI learns</span></div></li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node"><span contenteditable="true">Shift worked</span></div>
+                  <ul>
+                    <li><div class="node"><span contenteditable="true">Time tracking</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Payroll</span></div></li>
+                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="list-output hidden" id="list-output">
+      <strong>Generated list</strong>
+      <textarea id="list-text" readonly></textarea>
+      <div class="list-actions">
+        <button id="copy-list">Copy list</button>
+        <button id="close-list">Close</button>
+      </div>
+    </div>
+
+    <div class="meta">
+      Tip: select a bubble and press Enter to add a child, or Shift+Enter for a sibling.
+    </div>
+
+    <script>
+      const mindmap = document.getElementById("mindmap");
+      const addChildButton = document.getElementById("add-child");
+      const addSiblingButton = document.getElementById("add-sibling");
+      const deleteButton = document.getElementById("delete-node");
+      const collapseAllButton = document.getElementById("collapse-all");
+      const expandAllButton = document.getElementById("expand-all");
+      const generateListButton = document.getElementById("generate-list");
+      const listOutput = document.getElementById("list-output");
+      const listText = document.getElementById("list-text");
+      const copyListButton = document.getElementById("copy-list");
+      const closeListButton = document.getElementById("close-list");
+
+      function getSelectedNode() {
+        return mindmap.querySelector('.node[data-selected="true"]');
+      }
+
+      function clearSelection() {
+        mindmap.querySelectorAll(".node").forEach((node) => {
+          node.dataset.selected = "false";
+        });
+      }
+
+      function selectNode(node) {
+        if (!node) return;
+        clearSelection();
+        node.dataset.selected = "true";
+        node.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+
+      function ensureChildList(li) {
+        let ul = li.querySelector(":scope > ul");
+        if (!ul) {
+          ul = document.createElement("ul");
+          li.appendChild(ul);
+        }
+        return ul;
+      }
+
+      function createNode(text = "New bubble") {
+        const li = document.createElement("li");
+        const div = document.createElement("div");
+        div.className = "node";
+        const toggle = document.createElement("span");
+        toggle.className = "node-toggle";
+        toggle.setAttribute("aria-hidden", "true");
+        toggle.textContent = "+";
+        const span = document.createElement("span");
+        span.contentEditable = "true";
+        span.textContent = text;
+        div.appendChild(toggle);
+        div.appendChild(span);
+        li.appendChild(div);
+        return { li, div, span };
+      }
+
+      function addChild() {
+        const selected = getSelectedNode();
+        if (!selected) return;
+        const li = selected.closest("li");
+        const list = ensureChildList(li);
+        const { li: childLi, div, span } = createNode();
+        list.appendChild(childLi);
+        refreshToggle(li);
+        selectNode(div);
+        span.focus();
+        document.execCommand("selectAll", false, null);
+      }
+
+      function addSibling() {
+        const selected = getSelectedNode();
+        if (!selected) return;
+        const li = selected.closest("li");
+        const parentList = li.parentElement;
+        if (!parentList || parentList.tagName !== "UL") return;
+        const { li: siblingLi, div, span } = createNode();
+        parentList.insertBefore(siblingLi, li.nextSibling);
+        refreshToggle(parentList.closest("li"));
+        selectNode(div);
+        span.focus();
+        document.execCommand("selectAll", false, null);
+      }
+
+      function deleteNode() {
+        const selected = getSelectedNode();
+        if (!selected) return;
+        const li = selected.closest("li");
+        const parentList = li.parentElement;
+        if (!parentList || li.classList.contains("root")) return;
+        const nextSelect = li.previousElementSibling || li.nextElementSibling;
+        li.remove();
+        refreshToggle(parentList.closest("li"));
+        if (nextSelect) {
+          selectNode(nextSelect.querySelector(".node"));
+        } else {
+          const parentNode = parentList.closest("li")?.querySelector(":scope > .node");
+          if (parentNode) selectNode(parentNode);
+        }
+      }
+
+      function refreshToggle(li) {
+        if (!li) return;
+        const node = li.querySelector(":scope > .node");
+        if (!node) return;
+        let toggle = node.querySelector(".node-toggle");
+        if (!toggle) {
+          toggle = document.createElement("span");
+          toggle.className = "node-toggle";
+          toggle.setAttribute("aria-hidden", "true");
+          toggle.textContent = "+";
+          node.insertBefore(toggle, node.firstChild);
+        }
+        const hasChildren = li.querySelector(":scope > ul");
+        if (hasChildren) {
+          toggle.setAttribute("aria-hidden", "false");
+          toggle.textContent = li.classList.contains("collapsed") ? "+" : "−";
+        } else {
+          toggle.setAttribute("aria-hidden", "true");
+          toggle.textContent = "+";
+        }
+      }
+
+      function refreshAllToggles() {
+        mindmap.querySelectorAll("li").forEach((li) => refreshToggle(li));
+      }
+
+      function buildList() {
+        const rootLi = mindmap.querySelector("li.root");
+        if (!rootLi) return "";
+        const lines = [];
+
+        function walk(li, depth) {
+          const label = li.querySelector(":scope > .node span[contenteditable='true']")?.textContent?.trim();
+          if (label) {
+            const indent = "  ".repeat(depth);
+            lines.push(`${indent}- ${label}`);
+          }
+          const children = Array.from(li.querySelectorAll(":scope > ul > li"));
+          children.forEach((child) => walk(child, depth + 1));
+        }
+
+        walk(rootLi, 0);
+        return lines.join("\n");
+      }
+
+      function showList() {
+        listText.value = buildList();
+        listOutput.classList.remove("hidden");
+        listText.focus();
+        listText.select();
+      }
+
+      async function copyList() {
+        const text = listText.value;
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (error) {
+          listText.focus();
+          listText.select();
+          document.execCommand("copy");
+        }
+      }
+
+      function closeList() {
+        listOutput.classList.add("hidden");
+      }
+
+      function collapseAll() {
+        mindmap.querySelectorAll("li").forEach((li) => {
+          if (!li.classList.contains("root") && li.querySelector(":scope > ul")) {
+            li.classList.add("collapsed");
+          }
+        });
+        refreshAllToggles();
+      }
+
+      function expandAll() {
+        mindmap.querySelectorAll("li.collapsed").forEach((li) => {
+          li.classList.remove("collapsed");
+        });
+        refreshAllToggles();
+      }
+
+      mindmap.addEventListener("click", (event) => {
+        const toggle = event.target.closest(".node-toggle");
+        if (toggle) {
+          const li = toggle.closest("li");
+          li.classList.toggle("collapsed");
+          refreshToggle(li);
+          return;
+        }
+        const node = event.target.closest(".node");
+        if (node) selectNode(node);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const selected = getSelectedNode();
+        if (!selected) return;
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          addChild();
+        }
+        if (event.key === "Enter" && event.shiftKey) {
+          event.preventDefault();
+          addSibling();
+        }
+        if (event.key === "Delete" || event.key === "Backspace") {
+          if (document.activeElement?.getAttribute("contenteditable") === "true") {
+            return;
+          }
+          event.preventDefault();
+          deleteNode();
+        }
+      });
+
+      addChildButton.addEventListener("click", addChild);
+      addSiblingButton.addEventListener("click", addSibling);
+      deleteButton.addEventListener("click", deleteNode);
+      collapseAllButton.addEventListener("click", collapseAll);
+      expandAllButton.addEventListener("click", expandAll);
+      generateListButton.addEventListener("click", showList);
+      copyListButton.addEventListener("click", copyList);
+      closeListButton.addEventListener("click", closeList);
+
+      refreshAllToggles();
+      selectNode(getSelectedNode());
+    </script>
+  </body>
+</html>
+
