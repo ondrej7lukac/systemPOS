@@ -197,6 +197,59 @@
         flex-wrap: wrap;
       }
 
+      .sync-panel {
+        margin-top: 18px;
+        background: var(--node-bg);
+        border: 1px solid var(--node-border);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 18px rgba(31, 36, 48, 0.08);
+      }
+
+      .sync-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .sync-grid label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        color: #56607a;
+      }
+
+      .sync-grid input {
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--node-border);
+        font-size: 13px;
+      }
+
+      .sync-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .sync-status {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #56607a;
+      }
+
+      .sync-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #56607a;
+      }
+
       @media (max-width: 720px) {
         body {
           padding: 16px;
@@ -764,6 +817,44 @@
       </div>
     </div>
 
+    <div class="sync-panel">
+      <strong>GitHub sync (optional)</strong>
+      <div class="sync-grid">
+        <label>
+          Personal access token
+          <input id="gh-token" type="password" placeholder="ghp_..." />
+        </label>
+        <label>
+          Owner / org
+          <input id="gh-owner" type="text" placeholder="ondrej7lukac" />
+        </label>
+        <label>
+          Repository
+          <input id="gh-repo" type="text" placeholder="systemPOS" />
+        </label>
+        <label>
+          File path in repo
+          <input id="gh-path" type="text" value="mindmap.json" />
+        </label>
+        <label>
+          Branch
+          <input id="gh-branch" type="text" value="main" />
+        </label>
+      </div>
+      <div class="sync-actions">
+        <button id="gh-save">Save to GitHub</button>
+        <button id="gh-load">Load from GitHub</button>
+      </div>
+      <label class="sync-toggle">
+        <input id="gh-autosave" type="checkbox" />
+        Autosave to GitHub
+      </label>
+      <div class="sync-status" id="gh-status">Autosave is off.</div>
+      <div class="hint">
+        Token is used only in this browser. Keep it private.
+      </div>
+    </div>
+
     <div class="meta">
       Tip: select a bubble and press Enter to add a child, or Shift+Enter for a sibling.
     </div>
@@ -780,6 +871,19 @@
       const listText = document.getElementById("list-text");
       const copyListButton = document.getElementById("copy-list");
       const closeListButton = document.getElementById("close-list");
+      const ghTokenInput = document.getElementById("gh-token");
+      const ghOwnerInput = document.getElementById("gh-owner");
+      const ghRepoInput = document.getElementById("gh-repo");
+      const ghPathInput = document.getElementById("gh-path");
+      const ghBranchInput = document.getElementById("gh-branch");
+      const ghSaveButton = document.getElementById("gh-save");
+      const ghLoadButton = document.getElementById("gh-load");
+      const ghAutosaveToggle = document.getElementById("gh-autosave");
+      const ghStatus = document.getElementById("gh-status");
+
+      let autosaveTimer;
+      let isSaving = false;
+      let lastSavedSignature = "";
 
       function getSelectedNode() {
         return mindmap.querySelector('.node[data-selected="true"]');
@@ -913,6 +1017,186 @@
         return lines.join("\n");
       }
 
+      function exportTree() {
+        const rootLi = mindmap.querySelector("li.root");
+        if (!rootLi) return null;
+
+        function walk(li) {
+          const label = li.querySelector(":scope > .node span[contenteditable='true']")?.textContent?.trim() || "Untitled";
+          const children = Array.from(li.querySelectorAll(":scope > ul > li")).map(walk);
+          return { text: label, children };
+        }
+
+        return walk(rootLi);
+      }
+
+      function buildPayload() {
+        return {
+          version: 1,
+          updatedAt: new Date().toISOString(),
+          tree: exportTree(),
+        };
+      }
+
+      function applyTree(tree) {
+        if (!tree) return;
+        const rootLi = mindmap.querySelector("li.root");
+        if (!rootLi) return;
+        const rootLabel = rootLi.querySelector(":scope > .node span[contenteditable='true']");
+        if (rootLabel) rootLabel.textContent = tree.text || "SYSTEM CORE (POS PLATFORM)";
+
+        let ul = rootLi.querySelector(":scope > ul");
+        if (ul) ul.remove();
+        ul = document.createElement("ul");
+        rootLi.appendChild(ul);
+
+        function buildNodes(children, parentUl) {
+          children.forEach((child) => {
+            const { li } = createNode(child.text || "Untitled");
+            parentUl.appendChild(li);
+            if (child.children && child.children.length) {
+              const childUl = document.createElement("ul");
+              li.appendChild(childUl);
+              buildNodes(child.children, childUl);
+            }
+          });
+        }
+
+        buildNodes(tree.children || [], ul);
+        refreshAllToggles();
+      }
+
+      function base64Encode(text) {
+        const bytes = new TextEncoder().encode(text);
+        let binary = "";
+        bytes.forEach((b) => {
+          binary += String.fromCharCode(b);
+        });
+        return btoa(binary);
+      }
+
+      function base64Decode(base64) {
+        const binary = atob(base64);
+        const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
+      }
+
+      function githubConfig() {
+        return {
+          token: ghTokenInput.value.trim(),
+          owner: ghOwnerInput.value.trim(),
+          repo: ghRepoInput.value.trim(),
+          path: ghPathInput.value.trim(),
+          branch: ghBranchInput.value.trim() || "main",
+        };
+      }
+
+      function updateStatus(message) {
+        if (ghStatus) ghStatus.textContent = message;
+      }
+
+      function hasValidConfig(config) {
+        return config.token && config.owner && config.repo && config.path;
+      }
+
+      async function githubRequest(method, url, token, body) {
+        const response = await fetch(url, {
+          method,
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || `GitHub request failed (${response.status})`);
+        }
+        return response.json();
+      }
+
+      async function saveToGitHub(force = false) {
+        const config = githubConfig();
+        if (!hasValidConfig(config)) {
+          updateStatus("Missing GitHub settings.");
+          return;
+        }
+        if (isSaving) return;
+
+        const payload = buildPayload();
+        const signature = JSON.stringify(payload.tree);
+        if (!force && signature === lastSavedSignature) {
+          updateStatus("No changes to save.");
+          return;
+        }
+
+        isSaving = true;
+        updateStatus("Saving to GitHub...");
+
+        const content = base64Encode(JSON.stringify(payload, null, 2));
+        const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
+
+        let sha;
+        try {
+          const existing = await githubRequest("GET", url, config.token);
+          sha = existing.sha;
+        } catch (error) {
+          sha = undefined;
+        }
+
+        await githubRequest("PUT", url, config.token, {
+          message: "Update mind map",
+          content,
+          branch: config.branch,
+          sha,
+        });
+
+        lastSavedSignature = signature;
+        updateStatus(`Saved ${new Date().toLocaleTimeString()}.`);
+        isSaving = false;
+      }
+
+      async function loadFromGitHub() {
+        const config = githubConfig();
+        if (!hasValidConfig(config)) {
+          updateStatus("Missing GitHub settings.");
+          return;
+        }
+        const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
+        try {
+          updateStatus("Loading from GitHub...");
+          const data = await githubRequest("GET", url, config.token);
+          const decoded = base64Decode(data.content || "");
+          const parsed = JSON.parse(decoded);
+          applyTree(parsed.tree || parsed);
+          lastSavedSignature = JSON.stringify((parsed.tree || parsed));
+          updateStatus(`Loaded ${new Date().toLocaleTimeString()}.`);
+        } catch (error) {
+          updateStatus("Load failed. Check token/permissions.");
+        }
+      }
+
+      function scheduleAutosave() {
+        if (!ghAutosaveToggle.checked) return;
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(() => {
+          saveToGitHub(false).catch(() => {
+            updateStatus("Autosave failed. Check settings.");
+            isSaving = false;
+          });
+        }, 2000);
+      }
+
+      function setupAutosaveObserver() {
+        const observer = new MutationObserver(() => scheduleAutosave());
+        observer.observe(mindmap, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+        mindmap.addEventListener("input", () => scheduleAutosave());
+      }
+
       function showList() {
         listText.value = buildList();
         listOutput.classList.remove("hidden");
@@ -992,9 +1276,16 @@
       generateListButton.addEventListener("click", showList);
       copyListButton.addEventListener("click", copyList);
       closeListButton.addEventListener("click", closeList);
+      ghSaveButton.addEventListener("click", () => saveToGitHub(true));
+      ghLoadButton.addEventListener("click", loadFromGitHub);
+      ghAutosaveToggle.addEventListener("change", () => {
+        updateStatus(ghAutosaveToggle.checked ? "Autosave is on." : "Autosave is off.");
+        if (ghAutosaveToggle.checked) scheduleAutosave();
+      });
 
       refreshAllToggles();
       selectNode(getSelectedNode());
+      setupAutosaveObserver();
     </script>
   </body>
 </html>
