@@ -1011,7 +1011,7 @@
         <!-- CUSTOMER VIEW -->
         <div class="role-card" onclick="toggleRole(this)">
           <div class="role-card-top">
-            <span class="role-badge" style="background:rgba(236,72,153,.15);color:#ec4899">Mobile App</span>
+            <span class="role-badge" style="background:rgba(236,72,153,.15);color:#ec4899">Mobile Wrapper App</span>
             <h3>⭐ Customer View</h3>
             <span class="chevron">▼</span>
           </div>
@@ -1243,15 +1243,17 @@
               under consideration (marked as question mark in requirements).</div>
           </div>
           <div class="feature-group">
-            <div class="feature-group-label">Add-ons</div>
+            <div class="feature-group-label">Add-ons — all addons should be linked to existing products</div>
             <div class="feature-item">
               <div class="bullet" style="background:var(--c-products)"></div>
-              <div class="name">Add-on types<span class="sub">Extra shot, Alternative milk, Syrup, Whipped cream</span>
+              <div class="name">Add-on categories<span class="sub">e.g. Coffee addons, Food addons, Takeaway Y/N — Extra
+                  shot, Alternative milk, Syrup, Whipped cream... each category can have more addon types</span>
               </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
             </div>
-            <div class="info-bubble">Add-ons are optional extras that can be attached to a product during ordering. Each
-              add-on can have its own price and its own recipe (which decreases the relevant inventory on sale). Can be
-              limited per product type.</div>
+            <div class="info-bubble">Add-ons are optional extras that can be attached to a product during ordering. They
+              are grouped into addon categories (e.g. coffee addons, food addons, takeaway option). Each add-on can have
+              its own price and its own recipe (which decreases the relevant inventory on sale). Can be limited per
+              product type.</div>
           </div>
           <div class="feature-group">
             <div class="feature-group-label">Recipe System</div>
@@ -1339,6 +1341,24 @@
             <div class="info-bubble">When stock drops below minimum threshold, the system notifies the responsible
               person (push / in-app) and shows a warning on the manager dashboard. This prevents running out of
               ingredients mid-service.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Inventory Mode</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Fast inventory<span class="sub">Only recurring high-turnover items</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Quick stocktake focused only on the items that sell the most and need frequent
+              checking. Designed to be done in minutes during or between shifts without stopping operations.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Proper inventory<span class="sub">Full count of all items</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Full stocktake covering every inventory item. Done less frequently (weekly /
+              monthly). Results are compared against the system's calculated stock to identify discrepancies, waste, or
+              theft.</div>
           </div>
         </div>
       </div>
