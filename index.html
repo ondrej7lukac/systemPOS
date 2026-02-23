@@ -1,1292 +1,1970 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>POS Platform Mind Map</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --bg: #f7f7fb;
-        --node-bg: #ffffff;
-        --node-border: #cfd4e6;
-        --node-selected: #7b8cff;
-        --line: #9aa5c7;
-        --text: #1f2430;
-      }
 
-      * {
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>POS Platform — System Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1117;
+      --sidebar-bg: #16181f;
+      --surface: #1e2130;
+      --surface2: #252840;
+      --border: #2e3250;
+      --text: #e8eaf6;
+      --muted: #8b92b8;
+      --accent: #6c7eff;
+      --accent2: #a78bfa;
 
-      body {
-        margin: 0;
-        padding: 24px;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
+      --c-roles: #f59e0b;
+      --c-products: #10b981;
+      --c-inventory: #06b6d4;
+      --c-pos: #3b82f6;
+      --c-finance: #8b5cf6;
+      --c-staff: #ec4899;
+      --c-tasks: #f97316;
+      --c-loyalty: #14b8a6;
+      --c-marketing: #e11d48;
+      --c-ai: #a855f7;
+    }
 
-      header {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 18px;
-      }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-      header h1 {
-        font-size: 20px;
-        margin: 0;
-        flex: 1 1 auto;
-      }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
 
-      .controls {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
+    /* ── Sidebar ── */
+    nav {
+      width: 220px;
+      min-width: 220px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
 
-      button {
-        border: 1px solid var(--node-border);
-        background: var(--node-bg);
-        color: var(--text);
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-      }
+    nav .logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--accent);
+      padding: 0 18px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
 
-      button:hover {
-        border-color: var(--node-selected);
-      }
+    nav a {
+      display: block;
+      padding: 9px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
 
-      .hint {
-        font-size: 12px;
-        color: #4a5163;
-      }
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      background: var(--surface);
+      border-left-color: var(--accent);
+    }
 
-      .mindmap {
-        position: relative;
-        padding: 12px 0 24px 0;
-      }
+    nav .nav-section {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      padding: 16px 18px 6px;
+      font-weight: 600;
+    }
 
-      .mindmap ul {
-        list-style: none;
-        margin: 0;
-        padding-left: 28px;
-        position: relative;
-      }
+    nav a .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
 
-      .mindmap ul::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 12px;
-        bottom: 0;
-        width: 2px;
-        background: var(--line);
-      }
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 960px;
+    }
 
-      .mindmap li {
-        margin: 12px 0;
-        padding-left: 20px;
-        position: relative;
-      }
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
 
-      .mindmap li.collapsed > ul {
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-header .icon {
+      font-size: 22px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .section-header .badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    section {
+      margin-bottom: 64px;
+    }
+
+    /* ── Role cards ── */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      position: relative;
+    }
+
+    .role-card:hover {
+      border-color: var(--c-roles);
+    }
+
+    .role-card.open {
+      border-color: var(--c-roles);
+      box-shadow: 0 0 0 1px var(--c-roles);
+    }
+
+    .role-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, .15);
+      color: var(--c-roles);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .role-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .role-card .chevron {
+      color: var(--muted);
+      font-size: 12px;
+      transition: transform .2s;
+    }
+
+    .role-card.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .role-card .role-desc {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .role-card.open .role-desc {
+      display: block;
+    }
+
+    .role-desc .can-do,
+    .role-desc .cannot-do {
+      margin-top: 8px;
+    }
+
+    .role-desc ul {
+      padding-left: 16px;
+      margin-top: 4px;
+    }
+
+    .role-desc ul li {
+      margin-bottom: 3px;
+    }
+
+    .role-desc:focus {
+      outline: 2px solid rgba(108, 126, 255, .35);
+      border-radius: 6px;
+    }
+
+    .role-desc::after {
+      content: '✏ click to edit';
+      display: block;
+      font-size: 10px;
+      color: rgba(139, 146, 184, .4);
+      text-align: right;
+      margin-top: 6px;
+      pointer-events: none;
+    }
+
+    .role-desc:focus::after {
+      content: '✔ auto-saved';
+      color: rgba(16, 185, 129, .5);
+    }
+
+    .role-tag {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .tag-green {
+      color: #10b981;
+    }
+
+    .tag-red {
+      color: #f87171;
+    }
+
+    /* ── Access matrix ── */
+    .matrix-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    thead th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+    }
+
+    tbody tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    td .check {
+      color: #10b981;
+      font-size: 14px;
+    }
+
+    td .cross {
+      color: #374151;
+      font-size: 14px;
+    }
+
+    td .part {
+      color: #f59e0b;
+      font-size: 14px;
+    }
+
+    /* ── Modules ── */
+    .module {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+
+    .module-header:hover {
+      background: var(--surface2);
+    }
+
+    .module-color-bar {
+      width: 4px;
+      height: 28px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .module-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .module-count {
+      font-size: 11px;
+      color: var(--muted);
+      margin-right: 8px;
+    }
+
+    .module-chevron {
+      color: var(--muted);
+      transition: transform .2s;
+    }
+
+    .module.open .module-chevron {
+      transform: rotate(180deg);
+    }
+
+    .module-body {
+      display: none;
+      padding: 0 20px 16px;
+    }
+
+    .module.open .module-body {
+      display: block;
+    }
+
+    /* ── Feature list ── */
+    .feature-group {
+      margin-top: 16px;
+    }
+
+    .feature-group-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .feature-item:last-child {
+      border-bottom: none;
+    }
+
+    .feature-item .bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .feature-item .name {
+      font-size: 13px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .feature-item .sub {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+
+    .info-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all .15s;
+    }
+
+    .info-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .info-bubble {
+      display: none;
+      margin-top: 8px;
+      margin-left: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      width: calc(100% - 14px);
+      outline: none;
+      cursor: text;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .info-bubble.open {
+      display: block;
+    }
+
+    .info-bubble:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(108, 126, 255, .15);
+      color: var(--text);
+    }
+
+    .info-bubble::after {
+      content: '✏ click to edit';
+      display: block;
+      font-size: 10px;
+      color: rgba(139, 146, 184, .4);
+      text-align: right;
+      margin-top: 6px;
+      pointer-events: none;
+    }
+
+    .info-bubble:focus::after {
+      content: '✔ auto-saved';
+      color: rgba(16, 185, 129, .5);
+    }
+
+    @media(max-width: 700px) {
+      nav {
         display: none;
       }
 
-      .mindmap li::before {
-        content: "";
-        position: absolute;
-        top: 18px;
-        left: 12px;
-        width: 16px;
-        height: 2px;
-        background: var(--line);
+      main {
+        padding: 20px 16px;
       }
 
-      .node {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: var(--node-bg);
-        border: 2px solid var(--node-border);
-        border-radius: 999px;
-        box-shadow: 0 4px 12px rgba(31, 36, 48, 0.08);
-        cursor: pointer;
+      .roles-grid {
+        grid-template-columns: 1fr;
       }
+    }
 
-      .node-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        border: 1px solid var(--node-border);
-        font-size: 12px;
-        line-height: 1;
-        color: #4a5163;
-        background: #f2f4ff;
-        cursor: pointer;
-        user-select: none;
-      }
+    /* ── Generate List Modal ── */
+    .gen-btn {
+      display: block;
+      margin: 16px 12px 8px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: rgba(108, 126, 255, .12);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background .15s;
+    }
 
-      .node-toggle[aria-hidden="true"] {
-        display: none;
-      }
+    .gen-btn:hover {
+      background: rgba(108, 126, 255, .25);
+    }
 
-      .node[data-selected="true"] {
-        border-color: var(--node-selected);
-        box-shadow: 0 6px 18px rgba(123, 140, 255, 0.2);
-      }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .node span[contenteditable="true"] {
-        outline: none;
-        min-width: 32px;
-      }
+    .modal-overlay.open {
+      display: flex;
+    }
 
-      .node small {
-        color: #6c738a;
-        font-size: 12px;
-      }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-      .root > .node {
-        font-weight: 600;
-        background: #eef0ff;
-      }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
 
-      .meta {
-        margin-top: 12px;
-        font-size: 12px;
-        color: #56607a;
-      }
+    .modal-head h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
 
-      .list-output {
-        margin-top: 18px;
-        background: var(--node-bg);
-        border: 1px solid var(--node-border);
-        border-radius: 12px;
-        padding: 12px;
-        box-shadow: 0 8px 18px rgba(31, 36, 48, 0.08);
-      }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-      .list-output.hidden {
-        display: none;
-      }
+    .modal-copy-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
 
-      .list-output textarea {
-        width: 100%;
-        min-height: 180px;
-        border: 1px solid var(--node-border);
-        border-radius: 8px;
-        padding: 10px;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 13px;
-        resize: vertical;
-      }
+    .modal-copy-btn:hover {
+      opacity: .85;
+    }
 
-      .list-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-        flex-wrap: wrap;
-      }
+    .modal-close-btn {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
 
-      .sync-panel {
-        margin-top: 18px;
-        background: var(--node-bg);
-        border: 1px solid var(--node-border);
-        border-radius: 12px;
-        padding: 12px;
-        box-shadow: 0 8px 18px rgba(31, 36, 48, 0.08);
-      }
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
 
-      .sync-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-      }
+    .modal-body textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 480px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      padding: 16px;
+      resize: none;
+      outline: none;
+    }
 
-      .sync-grid label {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        font-size: 12px;
-        color: #56607a;
-      }
+    .modal-copied {
+      font-size: 12px;
+      color: #10b981;
+      opacity: 0;
+      transition: opacity .3s;
+    }
 
-      .sync-grid input {
-        padding: 8px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--node-border);
-        font-size: 13px;
-      }
+    .modal-copied.show {
+      opacity: 1;
+    }
+  </style>
+</head>
 
-      .sync-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
-        flex-wrap: wrap;
-      }
+<body>
 
-      .sync-status {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #56607a;
-      }
+  <nav>
+    <div class="logo">⬡ POS Platform</div>
+    <div class="nav-section">Overview</div>
+    <a href="#roles"><span class="dot" style="background:var(--c-roles)"></span>Roles &amp; Access</a>
+    <a href="#views"><span class="dot" style="background:#818cf8"></span>Views</a>
+    <a href="#matrix"><span class="dot" style="background:var(--c-roles)"></span>Access Matrix</a>
+    <div class="nav-section">Modules</div>
+    <a href="#products"><span class="dot" style="background:var(--c-products)"></span>Products &amp; Menu</a>
+    <a href="#inventory"><span class="dot" style="background:var(--c-inventory)"></span>Inventory</a>
+    <a href="#pos"><span class="dot" style="background:var(--c-pos)"></span>POS / Sales</a>
+    <a href="#finance"><span class="dot" style="background:var(--c-finance)"></span>Finance</a>
+    <a href="#staff"><span class="dot" style="background:var(--c-staff)"></span>Staff / HR</a>
+    <a href="#tasks"><span class="dot" style="background:var(--c-tasks)"></span>Task Engine</a>
+    <a href="#loyalty"><span class="dot" style="background:var(--c-loyalty)"></span>Loyalty</a>
+    <a href="#marketing"><span class="dot" style="background:var(--c-marketing)"></span>Marketing Hub</a>
+    <a href="#ai"><span class="dot" style="background:var(--c-ai)"></span>AI Engine</a>
+    <div class="nav-section">Export</div>
+    <button class="gen-btn" onclick="generateList()">📋 Generate List</button>
+    <span id="saveStatus"
+      style="display:block;font-size:11px;text-align:center;padding:6px 12px;opacity:0;transition:opacity .3s;"></span>
+  </nav>
 
-      .sync-toggle {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-        font-size: 12px;
-        color: #56607a;
-      }
+  <main>
+    <div class="page-title">System Core — POS Platform</div>
+    <div class="page-subtitle">React web app · Czech / English / Hindi · Browser + wrapper app</div>
 
-      @media (max-width: 720px) {
-        body {
-          padding: 16px;
-        }
-
-        .mindmap ul {
-          padding-left: 20px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>POS Platform Mind Map</h1>
-      <div class="controls">
-        <button id="add-child">Add child bubble</button>
-        <button id="add-sibling">Add sibling bubble</button>
-        <button id="delete-node">Delete bubble</button>
-        <button id="collapse-all">Collapse everything</button>
-        <button id="expand-all">Expand all</button>
-        <button id="generate-list">Generate list</button>
+    <!-- ══════════════════ ROLES ══════════════════ -->
+    <section id="roles">
+      <div class="section-header">
+        <span class="icon">👥</span>
+        <h2>Roles &amp; Access</h2>
+        <span class="badge" style="background:rgba(245,158,11,.15);color:var(--c-roles)">8 roles</span>
       </div>
-      <div class="hint">
-        Click a bubble to select. Double-click text to edit.
-      </div>
-    </header>
+      <div class="roles-grid">
 
-    <div class="mindmap" id="mindmap">
-      <ul>
-        <li class="root">
-          <div class="node" data-selected="true">
-            <span contenteditable="true">SYSTEM CORE (POS PLATFORM)</span>
-            <small>root</small>
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 1</span>
+            <h3>Superadmin (VS)</h3>
+            <span class="chevron">▼</span>
           </div>
-          <ul>
-            <li>
-              <div class="node"><span contenteditable="true">Products &amp; Menu System</span></div>
+          <div class="role-desc">
+            Highest platform-level role. Full access to everything across all businesses and branches.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
               <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Categories</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Coffee</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Drinks</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Food</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Bakery</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Alcohol</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Merchandise</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Add-ons</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Specials</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Seasonal items</span></div></li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Fields</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Visibility</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Available time</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Tax group</span></div></li>
-                      </ul>
-                    </li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Links</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">POS Sales</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Manager Setup</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Customer App</span></div></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Products (Sellable Items)</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Category</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Price</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Tax type</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Recipe</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Add-ons allowed</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Allergens</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Image</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Availability</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Margin / cost</span></div></li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Item printing settings</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Connect to printer</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Manager selects printable items</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Send to specific printer(s)</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Split / divide receipts</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Question mark: make all digital bons</span></div></li>
-                      </ul>
-                    </li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Links</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Recipe System</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Inventory System</span></div></li>
-                        <li><div class="node"><span contenteditable="true">POS Checkout</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Loyalty System</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Add-ons</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Extra shot</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Alternative milk</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Syrup</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Whipped cream</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Has price</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Has recipe</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Can be limited per product</span></div></li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Links</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Product</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Recipe</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Recipe System</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Ingredients + quantities</span></div></li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Example: Latte</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Espresso 18g</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Milk 200ml</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Cup 1x</span></div></li>
-                      </ul>
-                    </li>
-                    <li><div class="node"><span contenteditable="true">Ingredient links to inventory item</span></div></li>
-                    <li>
-                      <div class="node"><span contenteditable="true">Links</span></div>
-                      <ul>
-                        <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Cost calculation</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Stock decrease on sale</span></div></li>
-                        <li><div class="node"><span contenteditable="true">Profit calculation</span></div></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
+                <li>Access all businesses and branches</li>
+                <li>Platform-wide settings</li>
+                <li>Manage pricing plans / modules</li>
+                <li>View all data, logs, errors</li>
               </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Inventory &amp; Storage System</span></div>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Restrictions</div>
               <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Item Types</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Sellable Products</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Ingredients</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Disposables</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Hygiene &amp; Cleaning</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Equipment</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Office supplies</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Inventory Item Fields</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Type</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Unit (g, ml, pcs)</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Current stock</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Minimum stock</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Supplier</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Cost per unit</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Storage location</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Stock Movement</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Sale → auto decrease via recipe</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Invoice input → increase</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Manual adjustment</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Waste / loss</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Invoice Upload</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Manager uploads invoice</span></div></li>
-                    <li><div class="node"><span contenteditable="true">System parses items</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Stock increases</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Costs stored</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Low Stock Logic</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Notify responsible person</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Appears in manager dashboard</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Recipes</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Supplier module</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
-                  </ul>
-                </li>
+                <li>None — full access</li>
               </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Sales &amp; Payment System</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">POS Checkout</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Product selection</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Add-ons</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Discounts</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Loyalty points</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Payment method</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Payment Types</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Cash</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Card</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Online</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Voucher</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Gift card</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Money Flow Tracking</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Sale record</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Payment record</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Tax record</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Profit record</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Loyalty</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Finance Module</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Income Sources</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Cafe POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">E-shop</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Catering</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Events</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Wholesale</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance core</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Expenses</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Inventory purchases</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Rent</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Salaries</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Services</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Marketing</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Equipment</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Dashboards</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Revenue</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Costs</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Profit</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Cash vs Card</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Taxes</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Staff payroll</span></div></li>
-                    <li><div class="node"><span contenteditable="true">AI Engine</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Staff / Roles / HR System</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Roles</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Owner</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Managing Employee</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Barista</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Kitchen Staff</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Cleaning Staff</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Temporary Worker</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Employee Profile</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Role</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Contract type</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Hourly wage / salary</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Vacation balance</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Contact info</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Permissions</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Permissions</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Screens visible</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Editable settings</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Approval rights</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Time Tracking</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Auto clock in/out</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Manual correction</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Approval by managing employee</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Scheduling</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Calendar</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Shifts</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Swap shifts</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Manager approves swaps</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Salary View</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Hours worked</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Earnings</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Bonuses</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Vacation balance</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Responsibilities</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Responsibility System (Task Engine)</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Responsibility Object</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Description</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Frequency</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Assigned role/person</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Backup person</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Responsibility Log</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Created</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Assigned</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Completed</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Missed</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Auto Transfer</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Transfers if absent</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Notification sent</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Staff</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Notifications</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Manager Dashboard</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Customer &amp; Loyalty System</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Customer Profile</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Name</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Phone / email</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Points</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Visits</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Preferences</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Loyalty Logic</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Points per purchase</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Rewards</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Discounts</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Special offers</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Fun Layer</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Customer of the Month</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Free breakfast</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Badges</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Marketing</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Analytics</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Communication &amp; Marketing Hub</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Channels</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Email</span></div></li>
-                    <li><div class="node"><span contenteditable="true">WhatsApp</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Telegram</span></div></li>
-                    <li><div class="node"><span contenteditable="true">SMS</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Campaign Builder</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Select audience</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Message</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Schedule</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Track results</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Sales AI Bots</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Automated outreach</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Follow-ups</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Promotions</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Customers</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Products</span></div></li>
-                    <li><div class="node"><span contenteditable="true">AI Engine</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">AI Engine (Intelligence Layer)</span></div>
-              <ul>
-                <li><div class="node"><span contenteditable="true">Sales trends</span></div></li>
-                <li><div class="node"><span contenteditable="true">Stock usage</span></div></li>
-                <li><div class="node"><span contenteditable="true">Labor costs</span></div></li>
-                <li><div class="node"><span contenteditable="true">Profits</span></div></li>
-                <li><div class="node"><span contenteditable="true">Other businesses data</span></div></li>
-                <li>
-                  <div class="node"><span contenteditable="true">Provides</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Cost-saving suggestions</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Price optimization</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Menu optimization</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Staff optimization</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Links</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
-                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Inventory</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Staff</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div class="node"><span contenteditable="true">Big Picture Flow</span></div>
-              <ul>
-                <li>
-                  <div class="node"><span contenteditable="true">Sale</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">POS</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Inventory decreases</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance records</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Loyalty updates</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Analytics updated</span></div></li>
-                    <li><div class="node"><span contenteditable="true">AI learns</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Invoice</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Inventory increases</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance cost</span></div></li>
-                    <li><div class="node"><span contenteditable="true">AI learns</span></div></li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node"><span contenteditable="true">Shift worked</span></div>
-                  <ul>
-                    <li><div class="node"><span contenteditable="true">Time tracking</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Payroll</span></div></li>
-                    <li><div class="node"><span contenteditable="true">Finance</span></div></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="list-output hidden" id="list-output">
-      <strong>Generated list</strong>
-      <textarea id="list-text" readonly></textarea>
-      <div class="list-actions">
-        <button id="copy-list">Copy list</button>
-        <button id="close-list">Close</button>
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 2</span>
+            <h3>Business Entity (Owner)</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Represents a company that owns one or more branches. Manages company-wide data.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>Create &amp; manage branches</li>
+                <li>Set company info, billing</li>
+                <li>View all-branch analytics</li>
+                <li>Manage modules per branch</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Access other businesses' data</li>
+                <li>Platform-level settings</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 3</span>
+            <h3>Branch Manager</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Manages a single branch. Full operational control within that branch.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>All POS, inventory, staff management</li>
+                <li>Approve time corrections &amp; shift swaps</li>
+                <li>Upload invoices, configure products</li>
+                <li>View branch analytics &amp; finance</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Modify platform or company billing</li>
+                <li>Access other branches</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 4</span>
+            <h3>Leading Role</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Chef, Head Barista, Sales Bar Manager. Operational leadership of their department.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>Manage recipes, products in their area</li>
+                <li>View inventory &amp; low-stock alerts</li>
+                <li>Assign responsibilities to staff</li>
+                <li>View shift schedule</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Finance module</li>
+                <li>Staff payroll data</li>
+                <li>Branch-level settings</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 5</span>
+            <h3>Managing Employee</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Shift supervisor. Intermediate role between leading and employee.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>Approve time corrections</li>
+                <li>View staff schedule</li>
+                <li>Process POS transactions</li>
+                <li>Handle opening/closing duties</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Edit products or pricing</li>
+                <li>Access finance module</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 6</span>
+            <h3>Barista / Waiter / Kitchen / Cleaning</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Front-line staff. Role-specific screen access only.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>Barista/Waiter: create orders, process payments</li>
+                <li>Kitchen: view incoming orders only</li>
+                <li>Cleaning: view &amp; complete assigned tasks</li>
+                <li>Clock in/out</li>
+                <li>View own salary &amp; schedule</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Inventory, finance, settings</li>
+                <li>Other staff data</li>
+                <li>Auto-logged out when shift ends</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 7</span>
+            <h3>Temporary Worker</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Very limited access. Only basic task visibility.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>Clock in/out</li>
+                <li>View assigned tasks only</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>POS, inventory, finance, settings</li>
+                <li>Other staff info</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge">Level 8</span>
+            <h3>Customer</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Loyalty app access only. Not a business user.
+            <div class="can-do">
+              <div class="role-tag tag-green">✓ Can do</div>
+              <ul>
+                <li>View points &amp; rewards</li>
+                <li>Spin the wheel</li>
+                <li>Receive campaigns &amp; notifications</li>
+                <li>View events &amp; offers</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">✗ Cannot do</div>
+              <ul>
+                <li>Any back-office screen</li>
+                <li>Note: Bolt integration explicitly excluded</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════ VIEWS ══════════════════ -->
+    <section id="views">
+      <div class="section-header">
+        <span class="icon">🖥️</span>
+        <h2>Views &amp; Interfaces</h2>
+        <span class="badge" style="background:rgba(129,140,248,.15);color:#818cf8">4 views</span>
+      </div>
+      <div class="roles-grid">
+
+        <!-- POS VIEW -->
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge" style="background:rgba(16,185,129,.15);color:#10b981">Physical Branch</span>
+            <h3>📲 Regular POS View</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Registered as a physical branch terminal on-site. Designed for fast, in-person transactions.
+            <div class="can-do">
+              <div class="role-tag tag-green">• What staff sees</div>
+              <ul>
+                <li>Browse categories &amp; product list</li>
+                <li>Open product detail (photo, price, modifiers)</li>
+                <li>Create &amp; send orders to kitchen / bar</li>
+                <li>Accept cash, card, voucher payments</li>
+                <li>Cash tracking — income &amp; outcome register</li>
+                <li>Daily till open / close with cash count</li>
+                <li>View active table / seat layout</li>
+                <li>Split bills, apply discounts &amp; loyalty points</li>
+                <li>Print or email receipts</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">• Not visible in this view</div>
+              <ul>
+                <li>Backend settings, product management</li>
+                <li>Staff schedules or HR data</li>
+                <li>Finance reports or analytics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANAGING VIEW -->
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge" style="background:rgba(99,102,241,.15);color:#818cf8">Desktop / Laptop</span>
+            <h3>🛠️ Managing View</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Backend-facing interface loaded from a manager's computer. Focuses on organisation and planning.
+            <div class="can-do">
+              <div class="role-tag tag-green">• What manager sees</div>
+              <ul>
+                <li>Product library — add, edit, archive items</li>
+                <li>Category &amp; menu builder</li>
+                <li>Stock &amp; inventory management</li>
+                <li>Shift planner — create &amp; publish schedules</li>
+                <li>Employee list, roles, permissions</li>
+                <li>Finance overview — revenue, costs, margins</li>
+                <li>Sales &amp; performance analytics</li>
+                <li>Order history &amp; refund management</li>
+                <li>Export reports (PDF / CSV)</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">• Not visible in this view</div>
+              <ul>
+                <li>POS transaction screen (handled at terminal)</li>
+                <li>Customer-facing loyalty UI</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPLOYEE VIEW -->
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge" style="background:rgba(245,158,11,.15);color:#f59e0b">Mobile / Web App</span>
+            <h3>👤 Employee View</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Personal employee portal accessible from phone or browser. Everything related to their working life.
+            <div class="can-do">
+              <div class="role-tag tag-green">• What employee sees</div>
+              <ul>
+                <li>Personal schedule &amp; upcoming shifts</li>
+                <li>Worked hours log &amp; monthly summary</li>
+                <li>Shift swap requests &amp; approvals</li>
+                <li>Clock in / clock out (GPS or QR verified)</li>
+                <li>Employee discount codes &amp; perks</li>
+                <li>Personal employee bill / pay slip overview</li>
+                <li>Internal announcements &amp; messages</li>
+                <li>Task assignments for current shift</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">• Not visible in this view</div>
+              <ul>
+                <li>Other employees' private data or pay</li>
+                <li>POS terminal or product management</li>
+                <li>Finance &amp; analytics dashboards</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUSTOMER VIEW -->
+        <div class="role-card" onclick="toggleRole(this)">
+          <div class="role-card-top">
+            <span class="role-badge" style="background:rgba(236,72,153,.15);color:#ec4899">Mobile App</span>
+            <h3>⭐ Customer View</h3>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="role-desc">
+            Customer-facing app experience. Focused on loyalty, personalisation, and engagement.
+            <div class="can-do">
+              <div class="role-tag tag-green">• What customer sees</div>
+              <ul>
+                <li>Loyalty programme — points balance &amp; tier</li>
+                <li>Personalised offers &amp; deals based on history</li>
+                <li>Redeemable rewards &amp; vouchers</li>
+                <li>Push notifications — promotions, new items</li>
+                <li>Order history &amp; favourite items</li>
+                <li>Digital stamp card &amp; gamification badges</li>
+                <li>Branch info — opening hours, location</li>
+                <li>Pre-order or pickup scheduling (if enabled)</li>
+              </ul>
+            </div>
+            <div class="cannot-do">
+              <div class="role-tag tag-red">• Not visible in this view</div>
+              <ul>
+                <li>Any staff or internal data</li>
+                <li>Other customers' profiles</li>
+                <li>Backend settings or analytics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════ ACCESS MATRIX ══════════════════ -->
+    <section id="matrix">
+      <div class="section-header">
+        <span class="icon">📋</span>
+        <h2>Access Matrix</h2>
+      </div>
+      <div class="matrix-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Superadmin</th>
+              <th>Owner</th>
+              <th>Manager</th>
+              <th>Leading</th>
+              <th>Mgmt. Emp.</th>
+              <th>Staff</th>
+              <th>Temp</th>
+              <th>Customer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Products &amp; Menu</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>Inventory</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>POS / Sales</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>Finance</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>Staff / HR</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>Task Engine</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="part">◑</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>Loyalty</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="check">✔</span></td>
+            </tr>
+            <tr>
+              <td>Marketing Hub</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+            <tr>
+              <td>AI Engine</td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="check">✔</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+              <td><span class="cross">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">✔ Full &nbsp;◑ Partial (own data / view only) &nbsp;—
+        No access</p>
+    </section>
+
+    <!-- ══════════════════ MODULES ══════════════════ -->
+    <section id="modules">
+      <div class="section-header">
+        <span class="icon">🧩</span>
+        <h2>Modules &amp; Functionalities</h2>
+      </div>
+
+      <!-- Products -->
+      <div class="module" id="products">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-products)"></div>
+          <h3>Products &amp; Menu System</h3>
+          <span class="module-count">Categories · Products · Add-ons · Recipes</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Categories</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Category types<span class="sub">Coffee, Drinks, Food, Bakery, Alcohol, Merchandise,
+                  Add-ons, Specials, Seasonal</span></div><button class="info-btn"
+                onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each category groups sellable products. Categories have: Name, Visibility toggle
+              (hide from POS/customer app), Available time (e.g. breakfast only), and Tax group. Linked to POS Sales,
+              Manager Setup, and Customer App.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Category fields<span class="sub">Name, Visibility, Available time, Tax group</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Visibility controls whether the category appears on the POS screen or customer app.
+              Available time means you can set a category to only show during specific hours (e.g. breakfast menu
+              7–11am).</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Products (Sellable Items)</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Core product fields<span class="sub">Name, Category, Price, Tax type, Image,
+                  Availability, Allergens</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each product must have a name, be assigned to a category, have a set price and tax
+              type. Allergen info is required for compliance. Image can be uploaded for display on the customer-facing
+              screen or app.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Recipe &amp; cost<span class="sub">Linked recipe, Margin / cost calculation</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each product links to a recipe that defines what ingredients are used and in what
+              quantities. This allows the system to auto-deduct inventory on each sale and calculate the real cost and
+              profit margin per item.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Add-ons allowed<span class="sub">Which add-ons can be added to this product</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Manager defines which add-ons are applicable per product. E.g. a Latte can have
+              extra shot, alternative milk, syrup — but a croissant cannot have milk add-on.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Item printing settings<span class="sub">Connect to printer, split receipts, digital
+                  bons</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Manager selects which items are printable and to which printer (e.g. coffee → bar
+              printer, food → kitchen printer). Receipts can be split. Option to make all bons digital (no paper) is
+              under consideration (marked as question mark in requirements).</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Add-ons</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Add-on types<span class="sub">Extra shot, Alternative milk, Syrup, Whipped cream</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Add-ons are optional extras that can be attached to a product during ordering. Each
+              add-on can have its own price and its own recipe (which decreases the relevant inventory on sale). Can be
+              limited per product type.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Recipe System</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-products)"></div>
+              <div class="name">Ingredients &amp; quantities<span class="sub">e.g. Latte = Espresso 18g + Milk 200ml +
+                  Cup 1x</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Every recipe is a list of ingredients with exact quantities. Each ingredient links
+              to an inventory item. When a product is sold, the system automatically decreases stock by the recipe
+              amounts. This enables real-time cost calculation and profit tracking.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="module" id="inventory">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-inventory)"></div>
+          <h3>Inventory &amp; Storage System</h3>
+          <span class="module-count">Items · Stock Movement · Invoices · Alerts</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Item Types</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Types of inventory items<span class="sub">Ingredients, Disposables, Hygiene &amp;
+                  Cleaning, Equipment, Office supplies</span></div><button class="info-btn"
+                onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Not everything in inventory is a sellable product. The system tracks all physical
+              items: raw ingredients (coffee beans, milk), disposables (cups, napkins), hygiene products, equipment, and
+              office supplies. Each has its own tracking logic.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Inventory Item Fields</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Item data<span class="sub">Name, Type, Unit, Current stock, Minimum stock, Supplier,
+                  Cost/unit, Storage location</span></div><button class="info-btn"
+                onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Unit defines how the item is measured (grams, ml, pcs). Minimum stock triggers an
+              alert when stock falls below the threshold. Cost per unit feeds into the profit calculation. Storage
+              location helps staff physically find items.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Stock Movement</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Auto-decrease on sale<span class="sub">Recipe → Inventory link</span></div><button
+                class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">When a product is sold at POS, the system reads the recipe and automatically
+              decreases each ingredient's stock. No manual counting needed during service.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Invoice input, Manual adjustment, Waste/loss<span class="sub">Ways stock can increase or
+                  decrease</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Stock increases when a supplier invoice is uploaded and processed. Staff can also
+              manually adjust stock (e.g. after a stocktake). Waste or loss can be recorded separately to track
+              shrinkage.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Invoice Upload</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Manager uploads supplier invoice<span class="sub">System parses items → Stock increases
+                  → Costs stored</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Manager uploads a scanned or digital invoice. The system reads the items and
+              quantities and increases the relevant inventory items. The cost is stored and linked to finance expenses.
+              AI can learn from purchase patterns over time.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Low Stock Logic</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-inventory)"></div>
+              <div class="name">Low stock alerts<span class="sub">Notify responsible person + Manager dashboard</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">When stock drops below minimum threshold, the system notifies the responsible
+              person (push / in-app) and shows a warning on the manager dashboard. This prevents running out of
+              ingredients mid-service.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POS -->
+      <div class="module" id="pos">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-pos)"></div>
+          <h3>Sales &amp; Payment System (POS)</h3>
+          <span class="module-count">Checkout · Payments · Orders · Tables</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">POS Checkout</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Product selection &amp; add-ons<span class="sub">Browse catalog, add extras</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Staff select products from the visual catalog, apply add-ons, set quantities. The
+              order summary shows real-time totals including add-on prices and applicable discounts.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Discounts &amp; Loyalty points<span class="sub">Apply discount, redeem points</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Staff can apply manual discounts (if permitted by role) or redeem a customer's
+              loyalty points/vouchers at checkout. All discounts are logged for finance and fraud prevention.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Payment types<span class="sub">Cash, Card, Online, Voucher, Gift card</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Multiple payment methods can be combined for a single order (split payment). Each
+              payment type is tracked separately for the daily financial close and cash reconciliation.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Order Management</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Order creation + push notifications<span class="sub">Status tracking per order</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">When an order is placed, it is pushed to the relevant station (bar, kitchen). Push
+              notifications and proximity alerts can be configured. Order status (received → making → ready → served) is
+              tracked in real time.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Table management<span class="sub">Assign orders to tables</span></div><button
+                class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Orders can be tied to a table number. Multiple orders can be open per table. Tables
+              can be merged or split for billing.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Finance &amp; Cash Flow</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Cash tracking &amp; Tresor<span class="sub">Track cash in register and safe</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">At start/end of shift, staff declare cash in the register. The system compares
+              declared amount vs calculated amount from sales. Cash moved to the tresor (safe) is also tracked.
+              Discrepancies are flagged.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Money flow record<span class="sub">Sale record, Payment record, Tax record, Profit
+                  record</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Every completed sale generates a full financial record: what was sold, how it was
+              paid, which tax rate applied, and what the profit was (based on recipe costs). This feeds directly into
+              the Finance module.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Online &amp; External</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-pos)"></div>
+              <div class="name">Online orders &amp; delivery integrations<span class="sub">External service
+                  tracking</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Online orders flow into the same order management system. External delivery service
+              integrations allow tracking delivery status. Note: Bolt Food is explicitly excluded from integration
+              scope.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Finance -->
+      <div class="module" id="finance">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-finance)"></div>
+          <h3>Finance Module</h3>
+          <span class="module-count">Income · Expenses · Dashboards</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Income Sources</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-finance)"></div>
+              <div class="name">Revenue channels<span class="sub">Cafe POS, E-shop, Catering, Events, Wholesale</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Income is tracked by source so the owner can see which revenue stream performs
+              best. E-shop, catering, and events are tracked separately from daily POS sales. Wholesale (bulk orders for
+              other businesses) is also a channel.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Expenses</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-finance)"></div>
+              <div class="name">Expense categories<span class="sub">Inventory, Rent, Salaries, Services, Marketing,
+                  Equipment</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Expenses are categorised for clear P&amp;L reporting. Inventory costs come
+              automatically from invoice uploads. Salaries are pulled from HR. Other expenses are entered manually or
+              via integrations.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Dashboards</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-finance)"></div>
+              <div class="name">Financial views<span class="sub">Revenue, Costs, Profit, Cash vs Card, Taxes</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">The finance dashboard shows a real-time overview of all income and expenses.
+              Revenue vs costs gives live profit. Cash vs Card breakdown supports cash reconciliation. Tax record keeps
+              the business compliant.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff -->
+      <div class="module" id="staff">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-staff)"></div>
+          <h3>Staff / HR System</h3>
+          <span class="module-count">Profiles · Scheduling · Time Tracking · Payroll</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Employee Profile</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-staff)"></div>
+              <div class="name">Profile fields<span class="sub">Name, Role, Contract type, Wage/salary, Vacation
+                  balance, Contact, Permissions</span></div><button class="info-btn"
+                onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each employee has a profile with their personal data, contract type (full-time,
+              part-time, temp), hourly wage or monthly salary, and remaining vacation days. Permissions determine which
+              screens and actions they can access.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Time Tracking</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-staff)"></div>
+              <div class="name">Clock in/out<span class="sub">Auto clock, manual correction, manager approval</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Staff clock in/out via the app. If they forget, they can request a manual
+              correction which a manager must approve. On shared devices (e.g. a kitchen tablet), the system auto-logs
+              out when a shift ends to prevent unauthorized access.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Scheduling</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-staff)"></div>
+              <div class="name">Shift calendar &amp; swap<span class="sub">Calendar, Shifts, Swap requests, Manager
+                  approval</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Managers create the shift schedule on a calendar view. Staff can request shift
+              swaps with colleagues. Swap requests must be approved by a manager before they take effect. Staff can see
+              their own schedule on their phone.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Salary View</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-staff)"></div>
+              <div class="name">Payroll overview<span class="sub">Hours worked, Earnings, Bonuses, Vacation
+                  balance</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each employee can see their own payroll summary: total hours this month, calculated
+              earnings based on their wage, any bonuses, and remaining vacation days. Managers see this for all staff.
+              Finance module receives the salary total as an expense.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Engine -->
+      <div class="module" id="tasks">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-tasks)"></div>
+          <h3>Responsibility System (Task Engine)</h3>
+          <span class="module-count">Tasks · Assignment · Auto-transfer · Logs</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Responsibility Object</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-tasks)"></div>
+              <div class="name">Task definition<span class="sub">Name, Description, Frequency, Assigned role/person,
+                  Backup person</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">A responsibility is a recurring or one-time task assigned to a role or specific
+              person. It has a frequency (daily, weekly, per shift), a primary assignee, and a backup who takes over if
+              the primary is absent. Examples: opening checklist, cleaning schedule, stock count.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Responsibility Log</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-tasks)"></div>
+              <div class="name">Task lifecycle<span class="sub">Created → Assigned → Completed / Missed</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Every time a responsibility is due, a log entry is created. Staff mark it as
+              completed. If not completed in time, it is marked as missed. Managers can see a full log of completed and
+              missed responsibilities per person or shift.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Auto Transfer</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-tasks)"></div>
+              <div class="name">Absent staff → Backup takes over<span class="sub">Notification sent automatically</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">If the assigned person is absent (no active shift), the task is automatically
+              transferred to the backup person. A push notification is sent to the backup so nothing is missed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loyalty -->
+      <div class="module" id="loyalty">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-loyalty)"></div>
+          <h3>Customer &amp; Loyalty System</h3>
+          <span class="module-count">Profiles · Points · Rewards · Fun layer</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Customer Profile</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-loyalty)"></div>
+              <div class="name">Customer data<span class="sub">Name, Phone/email, Points, Visits, Preferences</span>
+              </div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Each registered customer has a profile with contact info, visit history,
+              accumulated loyalty points, and preference data (favourite drinks, allergen notes). This powers
+              personalised campaigns and rewards.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Loyalty Logic</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-loyalty)"></div>
+              <div class="name">Points &amp; rewards<span class="sub">Points per purchase → Rewards, Discounts, Special
+                  offers</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Customers earn points per purchase. Points can be redeemed for free products,
+              discounts, or special offers. Reward thresholds and values are set by the manager. Loyalty tiers
+              (bronze/silver/gold) can be added later.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Fun Layer</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-loyalty)"></div>
+              <div class="name">Gamification<span class="sub">Customer of the Month, Free breakfast, Badges, Spin the
+                  wheel</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Engagement features to keep customers coming back: monthly leaderboard, collectible
+              badges for milestones (10th visit, first purchase etc), spin-the-wheel for random prizes, and surprise
+              free breakfast for top customers.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marketing -->
+      <div class="module" id="marketing">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-marketing)"></div>
+          <h3>Communication &amp; Marketing Hub</h3>
+          <span class="module-count">Campaigns · Channels · AI Bots</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Channels</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-marketing)"></div>
+              <div class="name">Communication channels<span class="sub">Email, WhatsApp, Telegram, SMS</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Campaigns can be sent via multiple channels from one builder. Customers can choose
+              their preferred channel. WhatsApp and Telegram are priority channels for the Czech/Slovak market.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Campaign Builder</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-marketing)"></div>
+              <div class="name">Audience, message, schedule, results<span class="sub">Select who gets what and
+                  when</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">Manager selects a customer segment (e.g. all customers who haven't visited in 14
+              days), writes the message, schedules it, and sends. Results (open rate, redemptions) are tracked per
+              campaign.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Sales AI Bots</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-marketing)"></div>
+              <div class="name">Automated outreach<span class="sub">Follow-ups, Promotions, Re-engagement</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">AI bots handle routine outreach: birthday messages, re-engagement for lapsed
+              customers, automated follow-ups after a purchase. Rules and templates are set by manager; bots execute
+              automatically.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Engine -->
+      <div class="module" id="ai">
+        <div class="module-header" onclick="toggleModule(this)">
+          <div class="module-color-bar" style="background:var(--c-ai)"></div>
+          <h3>AI Engine (Intelligence Layer)</h3>
+          <span class="module-count">Trends · Optimization · Suggestions</span>
+          <span class="module-chevron">▼</span>
+        </div>
+        <div class="module-body">
+          <div class="feature-group">
+            <div class="feature-group-label">Data Inputs</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-ai)"></div>
+              <div class="name">What the AI learns from<span class="sub">Sales trends, Stock usage, Labor costs,
+                  Profits, External market data</span></div><button class="info-btn"
+                onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">The AI continuously analyses all data flowing through the system: daily sales
+              patterns, which products are trending, how fast stock is consumed, what the labor cost vs revenue ratio
+              looks like, and optionally benchmarks against anonymized industry data.</div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-label">Outputs &amp; Suggestions</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-ai)"></div>
+              <div class="name">Cost-saving suggestions<span class="sub">Reduce waste, optimize purchasing</span></div>
+              <button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">AI detects patterns like "you always over-order milk on Mondays" or "this
+              ingredient has 20% waste rate" and suggests ordering adjustments or recipe tweaks to reduce cost.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-ai)"></div>
+              <div class="name">Price &amp; menu optimization<span class="sub">What to sell more of, what to
+                  remove</span></div><button class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">AI identifies high-margin items that aren't selling enough and suggests promotions,
+              or flags low-margin products that take too much time. Menu optimization recommendations are shown to the
+              manager as actionable cards.</div>
+            <div class="feature-item">
+              <div class="bullet" style="background:var(--c-ai)"></div>
+              <div class="name">Staff optimization<span class="sub">Right people at the right time</span></div><button
+                class="info-btn" onclick="toggleBubble(this)">ℹ</button>
+            </div>
+            <div class="info-bubble">AI analyses peak hours vs staffing levels and suggests optimal shift patterns. If
+              labor cost is too high relative to revenue on certain days, it flags it with a recommendation.</div>
+          </div>
+        </div>
+      </div>
+
+    </section><!-- end modules -->
+  </main>
+
+  <!-- ══ Generate List Modal ══ -->
+  <div class="modal-overlay" id="genModal" onclick="closeModal(event)">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>📋 Full System List</h3>
+        <div class="modal-actions">
+          <span class="modal-copied" id="copiedMsg">✔ Copied!</span>
+          <button class="modal-copy-btn" onclick="copyList()">Copy to clipboard</button>
+          <button class="modal-close-btn" onclick="document.getElementById('genModal').classList.remove('open')">✕
+            Close</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <textarea id="genOutput" readonly spellcheck="false"></textarea>
       </div>
     </div>
+  </div>
 
-    <div class="sync-panel">
-      <strong>GitHub sync (optional)</strong>
-      <div class="sync-grid">
-        <label>
-          Personal access token
-          <input id="gh-token" type="password" placeholder="ghp_..." />
-        </label>
-        <label>
-          Owner / org
-          <input id="gh-owner" type="text" placeholder="ondrej7lukac" />
-        </label>
-        <label>
-          Repository
-          <input id="gh-repo" type="text" placeholder="systemPOS" />
-        </label>
-        <label>
-          File path in repo
-          <input id="gh-path" type="text" value="mindmap.json" />
-        </label>
-        <label>
-          Branch
-          <input id="gh-branch" type="text" value="main" />
-        </label>
-      </div>
-      <div class="sync-actions">
-        <button id="gh-save">Save to GitHub</button>
-        <button id="gh-load">Load from GitHub</button>
-      </div>
-      <label class="sync-toggle">
-        <input id="gh-autosave" type="checkbox" />
-        Autosave to GitHub
-      </label>
-      <div class="sync-status" id="gh-status">Autosave is off.</div>
-      <div class="hint">
-        Token is used only in this browser. Keep it private.
-      </div>
-    </div>
+  <script>
+    const SERVER = 'http://localhost:3333';
+    const LS_BUBBLES = 'pos-bubbles-v1';
+    const LS_ROLES = 'pos-roles-v1';
 
-    <div class="meta">
-      Tip: select a bubble and press Enter to add a child, or Shift+Enter for a sibling.
-    </div>
+    // ── Save-status indicator ─────────────────────────────
+    const statusEl = document.getElementById('saveStatus');
+    function showStatus(msg, color) {
+      if (!statusEl) return;
+      statusEl.textContent = msg; statusEl.style.color = color; statusEl.style.opacity = '1';
+    }
+    function hideStatus() { setTimeout(() => { if (statusEl) statusEl.style.opacity = '0'; }, 2500); }
 
-    <script>
-      const mindmap = document.getElementById("mindmap");
-      const addChildButton = document.getElementById("add-child");
-      const addSiblingButton = document.getElementById("add-sibling");
-      const deleteButton = document.getElementById("delete-node");
-      const collapseAllButton = document.getElementById("collapse-all");
-      const expandAllButton = document.getElementById("expand-all");
-      const generateListButton = document.getElementById("generate-list");
-      const listOutput = document.getElementById("list-output");
-      const listText = document.getElementById("list-text");
-      const copyListButton = document.getElementById("copy-list");
-      const closeListButton = document.getElementById("close-list");
-      const ghTokenInput = document.getElementById("gh-token");
-      const ghOwnerInput = document.getElementById("gh-owner");
-      const ghRepoInput = document.getElementById("gh-repo");
-      const ghPathInput = document.getElementById("gh-path");
-      const ghBranchInput = document.getElementById("gh-branch");
-      const ghSaveButton = document.getElementById("gh-save");
-      const ghLoadButton = document.getElementById("gh-load");
-      const ghAutosaveToggle = document.getElementById("gh-autosave");
-      const ghStatus = document.getElementById("gh-status");
+    // ── Debounced server save (localStorage as backup) ────
+    let saveTimer = null;
+    function schedSave() { clearTimeout(saveTimer); saveTimer = setTimeout(persistAll, 800); }
 
-      let autosaveTimer;
-      let isSaving = false;
-      let lastSavedSignature = "";
+    function persistAll() {
+      const data = { bubbles: {}, roles: {} };
+      document.querySelectorAll('.info-bubble').forEach((b, i) => data.bubbles[i] = b.innerHTML);
+      document.querySelectorAll('.role-desc').forEach((d, i) => data.roles[i] = d.innerHTML);
+      localStorage.setItem(LS_BUBBLES, JSON.stringify(data.bubbles));
+      localStorage.setItem(LS_ROLES, JSON.stringify(data.roles));
+      showStatus('Saving…', '#8b92b8');
+      fetch(SERVER + '/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(r => r.json())
+        .then(() => { showStatus('✔ Saved to file', '#10b981'); hideStatus(); })
+        .catch(() => { showStatus('⚠ Offline — saved locally', '#f59e0b'); hideStatus(); });
+    }
 
-      function getSelectedNode() {
-        return mindmap.querySelector('.node[data-selected="true"]');
-      }
-
-      function clearSelection() {
-        mindmap.querySelectorAll(".node").forEach((node) => {
-          node.dataset.selected = "false";
-        });
-      }
-
-      function selectNode(node) {
-        if (!node) return;
-        clearSelection();
-        node.dataset.selected = "true";
-        node.scrollIntoView({ block: "nearest", inline: "nearest" });
-      }
-
-      function ensureChildList(li) {
-        let ul = li.querySelector(":scope > ul");
-        if (!ul) {
-          ul = document.createElement("ul");
-          li.appendChild(ul);
-        }
-        return ul;
-      }
-
-      function createNode(text = "New bubble") {
-        const li = document.createElement("li");
-        const div = document.createElement("div");
-        div.className = "node";
-        const toggle = document.createElement("span");
-        toggle.className = "node-toggle";
-        toggle.setAttribute("aria-hidden", "true");
-        toggle.textContent = "+";
-        const span = document.createElement("span");
-        span.contentEditable = "true";
-        span.textContent = text;
-        div.appendChild(toggle);
-        div.appendChild(span);
-        li.appendChild(div);
-        return { li, div, span };
-      }
-
-      function addChild() {
-        const selected = getSelectedNode();
-        if (!selected) return;
-        const li = selected.closest("li");
-        const list = ensureChildList(li);
-        const { li: childLi, div, span } = createNode();
-        list.appendChild(childLi);
-        refreshToggle(li);
-        selectNode(div);
-        span.focus();
-        document.execCommand("selectAll", false, null);
-      }
-
-      function addSibling() {
-        const selected = getSelectedNode();
-        if (!selected) return;
-        const li = selected.closest("li");
-        const parentList = li.parentElement;
-        if (!parentList || parentList.tagName !== "UL") return;
-        const { li: siblingLi, div, span } = createNode();
-        parentList.insertBefore(siblingLi, li.nextSibling);
-        refreshToggle(parentList.closest("li"));
-        selectNode(div);
-        span.focus();
-        document.execCommand("selectAll", false, null);
-      }
-
-      function deleteNode() {
-        const selected = getSelectedNode();
-        if (!selected) return;
-        const li = selected.closest("li");
-        const parentList = li.parentElement;
-        if (!parentList || li.classList.contains("root")) return;
-        const nextSelect = li.previousElementSibling || li.nextElementSibling;
-        li.remove();
-        refreshToggle(parentList.closest("li"));
-        if (nextSelect) {
-          selectNode(nextSelect.querySelector(".node"));
-        } else {
-          const parentNode = parentList.closest("li")?.querySelector(":scope > .node");
-          if (parentNode) selectNode(parentNode);
-        }
-      }
-
-      function refreshToggle(li) {
-        if (!li) return;
-        const node = li.querySelector(":scope > .node");
-        if (!node) return;
-        let toggle = node.querySelector(".node-toggle");
-        if (!toggle) {
-          toggle = document.createElement("span");
-          toggle.className = "node-toggle";
-          toggle.setAttribute("aria-hidden", "true");
-          toggle.textContent = "+";
-          node.insertBefore(toggle, node.firstChild);
-        }
-        const hasChildren = li.querySelector(":scope > ul");
-        if (hasChildren) {
-          toggle.setAttribute("aria-hidden", "false");
-          toggle.textContent = li.classList.contains("collapsed") ? "+" : "−";
-        } else {
-          toggle.setAttribute("aria-hidden", "true");
-          toggle.textContent = "+";
-        }
-      }
-
-      function refreshAllToggles() {
-        mindmap.querySelectorAll("li").forEach((li) => refreshToggle(li));
-      }
-
-      function buildList() {
-        const rootLi = mindmap.querySelector("li.root");
-        if (!rootLi) return "";
-        const lines = [];
-
-        function walk(li, depth) {
-          const label = li.querySelector(":scope > .node span[contenteditable='true']")?.textContent?.trim();
-          if (label) {
-            const indent = "  ".repeat(depth);
-            lines.push(`${indent}- ${label}`);
-          }
-          const children = Array.from(li.querySelectorAll(":scope > ul > li"));
-          children.forEach((child) => walk(child, depth + 1));
-        }
-
-        walk(rootLi, 0);
-        return lines.join("\n");
-      }
-
-      function exportTree() {
-        const rootLi = mindmap.querySelector("li.root");
-        if (!rootLi) return null;
-
-        function walk(li) {
-          const label = li.querySelector(":scope > .node span[contenteditable='true']")?.textContent?.trim() || "Untitled";
-          const children = Array.from(li.querySelectorAll(":scope > ul > li")).map(walk);
-          return { text: label, children };
-        }
-
-        return walk(rootLi);
-      }
-
-      function buildPayload() {
+    // ── Load from server (fallback: localStorage) ─────────
+    async function loadData() {
+      try {
+        const r = await fetch(SERVER + '/load');
+        if (!r.ok) throw new Error();
+        return await r.json();
+      } catch {
         return {
-          version: 1,
-          updatedAt: new Date().toISOString(),
-          tree: exportTree(),
+          bubbles: JSON.parse(localStorage.getItem(LS_BUBBLES) || '{}'),
+          roles: JSON.parse(localStorage.getItem(LS_ROLES) || '{}'),
         };
       }
+    }
 
-      function applyTree(tree) {
-        if (!tree) return;
-        const rootLi = mindmap.querySelector("li.root");
-        if (!rootLi) return;
-        const rootLabel = rootLi.querySelector(":scope > .node span[contenteditable='true']");
-        if (rootLabel) rootLabel.textContent = tree.text || "SYSTEM CORE (POS PLATFORM)";
+    // ── Bootstrap ─────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.add('open'));
+      document.querySelectorAll('.module').forEach(m => m.classList.add('open'));
+      document.querySelectorAll('.info-bubble').forEach(b => {
+        b.classList.add('open');
+        const item = b.previousElementSibling;
+        if (item) { const btn = item.querySelector('.info-btn'); if (btn) btn.textContent = '✕'; }
+      });
 
-        let ul = rootLi.querySelector(":scope > ul");
-        if (ul) ul.remove();
-        ul = document.createElement("ul");
-        rootLi.appendChild(ul);
+      const saved = await loadData();
 
-        function buildNodes(children, parentUl) {
-          children.forEach((child) => {
-            const { li } = createNode(child.text || "Untitled");
-            parentUl.appendChild(li);
-            if (child.children && child.children.length) {
-              const childUl = document.createElement("ul");
-              li.appendChild(childUl);
-              buildNodes(child.children, childUl);
+      document.querySelectorAll('.info-bubble').forEach((bubble, i) => {
+        bubble.setAttribute('contenteditable', 'true');
+        if (saved.bubbles && saved.bubbles[i] !== undefined) bubble.innerHTML = saved.bubbles[i];
+        bubble.addEventListener('input', schedSave);
+        bubble.addEventListener('click', e => e.stopPropagation());
+      });
+
+      document.querySelectorAll('.role-desc').forEach((desc, i) => {
+        desc.setAttribute('contenteditable', 'true');
+        if (saved.roles && saved.roles[i] !== undefined) desc.innerHTML = saved.roles[i];
+        desc.addEventListener('input', schedSave);
+        desc.addEventListener('click', e => e.stopPropagation());
+      });
+    });
+
+    // ── Reset all saved edits ─────────────────────────────
+    async function resetAll() {
+      if (!confirm('Reset ALL edits to original? Cannot be undone.')) return;
+      localStorage.removeItem(LS_BUBBLES);
+      localStorage.removeItem(LS_ROLES);
+      try { await fetch(SERVER + '/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"bubbles":{},"roles":{}}' }); } catch { }
+      location.reload();
+    }
+
+    function toggleRole(card) {
+      card.classList.toggle('open');
+    }
+
+    function toggleModule(header) {
+      header.parentElement.classList.toggle('open');
+    }
+
+    function toggleBubble(btn) {
+      const item = btn.closest('.feature-item');
+      const bubble = item.nextElementSibling;
+      if (bubble && bubble.classList.contains('info-bubble')) {
+        bubble.classList.toggle('open');
+        if (bubble.classList.contains('open')) setTimeout(() => bubble.focus(), 50);
+      }
+      btn.textContent = (bubble && bubble.classList.contains('open')) ? '✕' : 'ℹ';
+    }
+
+    // Call from browser console to wipe all saved edits
+    function resetAll() {
+      if (!confirm('Reset ALL edits to original? Cannot be undone.')) return;
+      localStorage.removeItem(LS_BUBBLES);
+      localStorage.removeItem(LS_ROLES);
+      location.reload();
+    }
+
+    // ── Generate List ──
+    function txt(el) {
+      return (el ? el.innerText : '').replace(/✏ click to edit|✔ auto-saved/g, '').trim();
+    }
+
+    function generateList() {
+      const lines = [];
+      const pad = (n, c = '─') => c.repeat(n);
+      const ts = new Date().toLocaleString();
+
+      lines.push('╔' + pad(60) + '╗');
+      lines.push('║  SYSTEM CORE — POS PLATFORM' + ' '.repeat(32) + '║');
+      lines.push('║  Generated: ' + ts + ' '.repeat(Math.max(0, 47 - ts.length)) + '║');
+      lines.push('╚' + pad(60) + '╝');
+      lines.push('');
+
+      // ── ROLES ──
+      lines.push('══════════════════════════════════════════════════════════');
+      lines.push('  SECTION 1 — ROLES & ACCESS');
+      lines.push('══════════════════════════════════════════════════════════');
+      lines.push('');
+
+      document.querySelectorAll('.role-card').forEach(card => {
+        const level = txt(card.querySelector('.role-badge'));
+        const name = txt(card.querySelector('h3'));
+        const desc = card.querySelector('.role-desc');
+
+        lines.push('┌─ ' + level + ' · ' + name);
+
+        if (desc) {
+          // intro text (text nodes directly inside role-desc)
+          const intro = Array.from(desc.childNodes)
+            .filter(n => n.nodeType === 3)
+            .map(n => n.textContent.trim())
+            .filter(Boolean)
+            .join(' ');
+          if (intro) lines.push('│  ' + intro);
+
+          // can-do / cannot-do blocks
+          desc.querySelectorAll('.can-do, .cannot-do').forEach(block => {
+            const label = txt(block.querySelector('.role-tag'));
+            lines.push('│');
+            lines.push('│  ' + label);
+            block.querySelectorAll('li').forEach(li => {
+              lines.push('│    • ' + txt(li));
+            });
+          });
+        }
+        lines.push('└' + pad(58));
+        lines.push('');
+      });
+
+      // ── MODULES ──
+      lines.push('══════════════════════════════════════════════════════════');
+      lines.push('  SECTION 2 — MODULES & FUNCTIONALITIES');
+      lines.push('══════════════════════════════════════════════════════════');
+      lines.push('');
+
+      document.querySelectorAll('.module').forEach(mod => {
+        const modName = txt(mod.querySelector('.module-header h3'));
+        const modCount = txt(mod.querySelector('.module-count'));
+        lines.push('┌──────────────────────────────────────────────────────');
+        lines.push('│  MODULE: ' + modName);
+        if (modCount) lines.push('│  ' + modCount);
+        lines.push('│');
+
+        mod.querySelectorAll('.feature-group').forEach(group => {
+          const groupLabel = txt(group.querySelector('.feature-group-label'));
+          if (groupLabel) lines.push('│  ▸ ' + groupLabel.toUpperCase());
+
+          group.querySelectorAll('.feature-item').forEach(item => {
+            const nameEl = item.querySelector('.name');
+            const name = nameEl ? nameEl.childNodes[0].textContent.trim() : '';
+            const sub = txt(item.querySelector('.sub'));
+            const bubble = item.nextElementSibling;
+            const info = (bubble && bubble.classList.contains('info-bubble')) ? txt(bubble) : '';
+
+            lines.push('│    ● ' + name);
+            if (sub) lines.push('│      ↳ ' + sub);
+            if (info) {
+              // wrap info text at ~70 chars
+              const words = info.split(' ');
+              let line = '│      ℹ ';
+              words.forEach(w => {
+                if ((line + w).length > 78) { lines.push(line); line = '│        ' + w + ' '; }
+                else line += w + ' ';
+              });
+              if (line.trim().length > 2) lines.push(line.trimEnd());
             }
+            lines.push('│');
           });
-        }
-
-        buildNodes(tree.children || [], ul);
-        refreshAllToggles();
-      }
-
-      function base64Encode(text) {
-        const bytes = new TextEncoder().encode(text);
-        let binary = "";
-        bytes.forEach((b) => {
-          binary += String.fromCharCode(b);
-        });
-        return btoa(binary);
-      }
-
-      function base64Decode(base64) {
-        const binary = atob(base64);
-        const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-        return new TextDecoder().decode(bytes);
-      }
-
-      function githubConfig() {
-        return {
-          token: ghTokenInput.value.trim(),
-          owner: ghOwnerInput.value.trim(),
-          repo: ghRepoInput.value.trim(),
-          path: ghPathInput.value.trim(),
-          branch: ghBranchInput.value.trim() || "main",
-        };
-      }
-
-      function updateStatus(message) {
-        if (ghStatus) ghStatus.textContent = message;
-      }
-
-      function hasValidConfig(config) {
-        return config.token && config.owner && config.repo && config.path;
-      }
-
-      async function githubRequest(method, url, token, body) {
-        const response = await fetch(url, {
-          method,
-          headers: {
-            Accept: "application/vnd.github+json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: body ? JSON.stringify(body) : undefined,
-        });
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(text || `GitHub request failed (${response.status})`);
-        }
-        return response.json();
-      }
-
-      async function saveToGitHub(force = false) {
-        const config = githubConfig();
-        if (!hasValidConfig(config)) {
-          updateStatus("Missing GitHub settings.");
-          return;
-        }
-        if (isSaving) return;
-
-        const payload = buildPayload();
-        const signature = JSON.stringify(payload.tree);
-        if (!force && signature === lastSavedSignature) {
-          updateStatus("No changes to save.");
-          return;
-        }
-
-        isSaving = true;
-        updateStatus("Saving to GitHub...");
-
-        const content = base64Encode(JSON.stringify(payload, null, 2));
-        const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
-
-        let sha;
-        try {
-          const existing = await githubRequest("GET", url, config.token);
-          sha = existing.sha;
-        } catch (error) {
-          sha = undefined;
-        }
-
-        await githubRequest("PUT", url, config.token, {
-          message: "Update mind map",
-          content,
-          branch: config.branch,
-          sha,
         });
 
-        lastSavedSignature = signature;
-        updateStatus(`Saved ${new Date().toLocaleTimeString()}.`);
-        isSaving = false;
-      }
-
-      async function loadFromGitHub() {
-        const config = githubConfig();
-        if (!hasValidConfig(config)) {
-          updateStatus("Missing GitHub settings.");
-          return;
-        }
-        const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
-        try {
-          updateStatus("Loading from GitHub...");
-          const data = await githubRequest("GET", url, config.token);
-          const decoded = base64Decode(data.content || "");
-          const parsed = JSON.parse(decoded);
-          applyTree(parsed.tree || parsed);
-          lastSavedSignature = JSON.stringify((parsed.tree || parsed));
-          updateStatus(`Loaded ${new Date().toLocaleTimeString()}.`);
-        } catch (error) {
-          updateStatus("Load failed. Check token/permissions.");
-        }
-      }
-
-      function scheduleAutosave() {
-        if (!ghAutosaveToggle.checked) return;
-        clearTimeout(autosaveTimer);
-        autosaveTimer = setTimeout(() => {
-          saveToGitHub(false).catch(() => {
-            updateStatus("Autosave failed. Check settings.");
-            isSaving = false;
-          });
-        }, 2000);
-      }
-
-      function setupAutosaveObserver() {
-        const observer = new MutationObserver(() => scheduleAutosave());
-        observer.observe(mindmap, {
-          childList: true,
-          subtree: true,
-          characterData: true,
-        });
-        mindmap.addEventListener("input", () => scheduleAutosave());
-      }
-
-      function showList() {
-        listText.value = buildList();
-        listOutput.classList.remove("hidden");
-        listText.focus();
-        listText.select();
-      }
-
-      async function copyList() {
-        const text = listText.value;
-        if (!text) return;
-        try {
-          await navigator.clipboard.writeText(text);
-        } catch (error) {
-          listText.focus();
-          listText.select();
-          document.execCommand("copy");
-        }
-      }
-
-      function closeList() {
-        listOutput.classList.add("hidden");
-      }
-
-      function collapseAll() {
-        mindmap.querySelectorAll("li").forEach((li) => {
-          if (!li.classList.contains("root") && li.querySelector(":scope > ul")) {
-            li.classList.add("collapsed");
-          }
-        });
-        refreshAllToggles();
-      }
-
-      function expandAll() {
-        mindmap.querySelectorAll("li.collapsed").forEach((li) => {
-          li.classList.remove("collapsed");
-        });
-        refreshAllToggles();
-      }
-
-      mindmap.addEventListener("click", (event) => {
-        const toggle = event.target.closest(".node-toggle");
-        if (toggle) {
-          const li = toggle.closest("li");
-          li.classList.toggle("collapsed");
-          refreshToggle(li);
-          return;
-        }
-        const node = event.target.closest(".node");
-        if (node) selectNode(node);
+        lines.push('└──────────────────────────────────────────────────────');
+        lines.push('');
       });
 
-      document.addEventListener("keydown", (event) => {
-        const selected = getSelectedNode();
-        if (!selected) return;
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          addChild();
-        }
-        if (event.key === "Enter" && event.shiftKey) {
-          event.preventDefault();
-          addSibling();
-        }
-        if (event.key === "Delete" || event.key === "Backspace") {
-          if (document.activeElement?.getAttribute("contenteditable") === "true") {
-            return;
-          }
-          event.preventDefault();
-          deleteNode();
-        }
-      });
+      lines.push(pad(62, '─'));
+      lines.push('END OF DOCUMENT');
 
-      addChildButton.addEventListener("click", addChild);
-      addSiblingButton.addEventListener("click", addSibling);
-      deleteButton.addEventListener("click", deleteNode);
-      collapseAllButton.addEventListener("click", collapseAll);
-      expandAllButton.addEventListener("click", expandAll);
-      generateListButton.addEventListener("click", showList);
-      copyListButton.addEventListener("click", copyList);
-      closeListButton.addEventListener("click", closeList);
-      ghSaveButton.addEventListener("click", () => saveToGitHub(true));
-      ghLoadButton.addEventListener("click", loadFromGitHub);
-      ghAutosaveToggle.addEventListener("change", () => {
-        updateStatus(ghAutosaveToggle.checked ? "Autosave is on." : "Autosave is off.");
-        if (ghAutosaveToggle.checked) scheduleAutosave();
-      });
+      document.getElementById('genOutput').value = lines.join('\n');
+      document.getElementById('genModal').classList.add('open');
+    }
 
-      refreshAllToggles();
-      selectNode(getSelectedNode());
-      setupAutosaveObserver();
-    </script>
-  </body>
+    function copyList() {
+      const ta = document.getElementById('genOutput');
+      ta.select();
+      navigator.clipboard.writeText(ta.value).then(() => {
+        const msg = document.getElementById('copiedMsg');
+        msg.classList.add('show');
+        setTimeout(() => msg.classList.remove('show'), 2000);
+      });
+    }
+
+    function closeModal(e) {
+      if (e.target === document.getElementById('genModal')) {
+        document.getElementById('genModal').classList.remove('open');
+      }
+    }
+
+    // Highlight active nav link on scroll
+    const sections = document.querySelectorAll('section, .module');
+    const navLinks = document.querySelectorAll('nav a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+      navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+    });
+  </script>
+</body>
+
 </html>
-
