@@ -6,11 +6,11 @@
  */
 
 const http = require('http');
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
 
-const PORT      = 3333;
-const DIR       = __dirname;
+const PORT = 3333;
+const DIR = __dirname;
 const DATA_FILE = path.join(DIR, 'data.json');
 const HTML_FILE = path.join(DIR, 'index.html');
 
@@ -19,7 +19,7 @@ function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', chunk => body += chunk);
-    req.on('end',  () => resolve(body));
+    req.on('end', () => resolve(body));
     req.on('error', reject);
   });
 }
@@ -27,7 +27,7 @@ function readBody(req) {
 function json(res, code, data) {
   const body = JSON.stringify(data);
   res.writeHead(code, {
-    'Content-Type':  'application/json',
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
   });
@@ -41,7 +41,7 @@ const server = http.createServer(async (req, res) => {
   // CORS pre-flight
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin':  '*',
+      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     });
@@ -71,12 +71,24 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // POST /save → write data to disk
+  // POST /save → write data.json AND bake into index.html
   if (req.method === 'POST' && url === '/save') {
     try {
       const body = await readBody(req);
       const data = JSON.parse(body);
+
+      // 1. Write data.json (fast cache)
       fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+
+      // 2. Bake into index.html so git push carries the edits
+      let html = fs.readFileSync(HTML_FILE, 'utf8');
+      const jsonStr = JSON.stringify(data);
+      html = html.replace(
+        /<script id="savedData" type="application\/json">[\s\S]*?<\/script>/,
+        `<script id="savedData" type="application/json">${jsonStr}</script>`
+      );
+      fs.writeFileSync(HTML_FILE, html, 'utf8');
+
       return json(res, 200, { ok: true });
     } catch (e) {
       return json(res, 400, { ok: false, error: String(e) });

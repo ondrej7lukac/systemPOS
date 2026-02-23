@@ -639,6 +639,8 @@
       opacity: 1;
     }
   </style>
+  <!-- Saved edits are embedded here by the server so they travel with git push -->
+  <script id="savedData" type="application/json">{}</script>
 </head>
 
 <body>
@@ -1760,18 +1762,26 @@
         .catch(() => { showStatus('⚠ Offline — saved locally', '#f59e0b'); hideStatus(); });
     }
 
-    // ── Load from server (fallback: localStorage) ─────────
+    // ── Load: embedded HTML → server → localStorage ───────
     async function loadData() {
+      // 1. Embedded in this HTML file (set by server on save, travels with git push)
+      try {
+        const embedded = JSON.parse(document.getElementById('savedData').textContent || '{}');
+        if (embedded && (Object.keys(embedded.bubbles || {}).length || Object.keys(embedded.roles || {}).length)) {
+          return embedded;
+        }
+      } catch { }
+      // 2. Local server (running on this machine)
       try {
         const r = await fetch(SERVER + '/load');
         if (!r.ok) throw new Error();
         return await r.json();
-      } catch {
-        return {
-          bubbles: JSON.parse(localStorage.getItem(LS_BUBBLES) || '{}'),
-          roles: JSON.parse(localStorage.getItem(LS_ROLES) || '{}'),
-        };
-      }
+      } catch { }
+      // 3. Last resort: localStorage
+      return {
+        bubbles: JSON.parse(localStorage.getItem(LS_BUBBLES) || '{}'),
+        roles: JSON.parse(localStorage.getItem(LS_ROLES) || '{}'),
+      };
     }
 
     // ── Bootstrap ─────────────────────────────────────────
